@@ -321,30 +321,30 @@ integer function AHI_calc_satangs(ahi_main,verbose) result(status)
 	b	=	ahi_main%ahi_navdata%polrRadius
 
 
-     cos_lat = cos(ahi_main%ahi_data%lat * HIMAWARI_DEGTORAD)
-     sin_lat = sin(ahi_main%ahi_data%lat * HIMAWARI_DEGTORAD)
-     cos_lon = cos(ahi_main%ahi_data%lon * HIMAWARI_DEGTORAD)
-     sin_lon = sin(ahi_main%ahi_data%lon * HIMAWARI_DEGTORAD)
+   cos_lat = cos(ahi_main%ahi_data%lat * HIMAWARI_DEGTORAD)
+   sin_lat = sin(ahi_main%ahi_data%lat * HIMAWARI_DEGTORAD)
+   cos_lon = cos(ahi_main%ahi_data%lon * HIMAWARI_DEGTORAD)
+   sin_lon = sin(ahi_main%ahi_data%lon * HIMAWARI_DEGTORAD)
 
-     e2	=	1. - (b * b) / (a * a)
+   e2	=	1. - (b * b) / (a * a)
 
-     N	=	a / sqrt(1. - e2 * sin_lat * sin_lat)
+   N	=	a / sqrt(1. - e2 * sin_lat * sin_lat)
 
-     x	=	N * cos_lat * cos_lon;
-     y	=	N * cos_lat * sin_lon;
-     z	=	((b * b) / (a * a) * N) * sin_lat;
+   x	=	N * cos_lat * cos_lon;
+   y	=	N * cos_lat * sin_lon;
+   z	=	((b * b) / (a * a) * N) * sin_lat;
 
-     qv1	=	ahi_main%ahi_navdata%satdis * cos(ahi_main%ahi_navdata%subLon * HIMAWARI_DEGTORAD)
-     qv2	=	ahi_main%ahi_navdata%satdis * sin(ahi_main%ahi_navdata%subLon * HIMAWARI_DEGTORAD)
-     qv3	=	0
+   qv1	=	ahi_main%ahi_navdata%satdis * cos(ahi_main%ahi_navdata%subLon * HIMAWARI_DEGTORAD)
+   qv2	=	ahi_main%ahi_navdata%satdis * sin(ahi_main%ahi_navdata%subLon * HIMAWARI_DEGTORAD)
+   qv3	=	0
 
 	qv1 = qv1 - x
 	qv2 = qv2 - y
 	qv3 = qv3 - z
 	!s,e,z
-	u1 = (sin_lat  * cos_lon * qv1)  + ( sin_lat * sin_lon * qv2) - (cos_lat * qv3)
-	u2 = (-sin_lon *           qv1)  + ( cos_lon           * qv2)
-	u3 = (cos_lat  * cos_lon * qv1)  + ( cos_lat * sin_lon * qv2) + (sin_lat * qv3)
+   u1 = (-sin_lat * cos_lon * qv1) + (-sin_lat * sin_lon * qv2) + (cos_lat * qv3)
+   u2 = (-sin_lon *           qv1) + ( cos_lon           * qv2)
+   u3 = ( cos_lat * cos_lon * qv1) + (-cos_lat * sin_lon * qv2) + (sin_lat * qv3)
 
 	ahi_main%ahi_data%vza = acos(u3 / sqrt(u1*u1 + u2*u2 + u3*u3)) * HIMAWARI_RADTODEG
 
