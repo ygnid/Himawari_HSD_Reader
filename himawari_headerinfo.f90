@@ -63,9 +63,8 @@ type	::	himawari_t_Basic_Info
 	character*32		::	verName
 	character*128		::	fileName
 	character*40		::	spare
-	
-end type	himawari_t_Basic_Info
 
+end type	himawari_t_Basic_Info
 
 	! Some more basic info, mostly unused by us
 type	::	himawari_t_Data_Info
@@ -185,7 +184,7 @@ type	::	himawari_t_InterCalib_Info
 	real(kind=ahi_dreal)	::	gsicsCorr_2_er
 	real(kind=ahi_dreal)	::	gsicsBias
 	real(kind=ahi_dreal)	::	gsicsUncert
-	
+
 	character*64		::	gsicsCorrInfo
 	character*128		::	spare
 end type himawari_t_InterCalib_Info
@@ -286,4 +285,4 @@ type	::	himawari_t_VIS_Header
 end type	himawari_t_VIS_Header
 
 end module himawari_headerinfo
-			
+

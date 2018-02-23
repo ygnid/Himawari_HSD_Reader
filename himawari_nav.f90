@@ -56,8 +56,14 @@ integer function AHI_Solpos(year,month,day,hour,minute,lat,lon,sza,saa) result(s
 	real(kind=ahi_sreal),	intent(out)	:: sza
 	real(kind=ahi_sreal),	intent(out)	:: saa
 
-    status = get_sza_saa(year,month,day,hour,minute,lat,lon,sza,saa)
-    if (status .ne. 0) then
+	integer	::	retval
+
+	saa 		=	0.
+	sza 		=	0.
+	retval	=	0
+
+    retval = get_sza_saa(year,month,day,hour,minute,lat,lon,sza,saa)
+    if (retval .ne. 0) then
         write(6, *) 'ERROR: get_sza_saa()'
         return
     end if
@@ -260,15 +266,16 @@ integer function AHI_Calctime(ahi_main,verbose) result(status)
 	tfact	=	10.0/(24.0*60.0)
 
 
-	do x=1,HIMAWARI_IR_NLINES
-			ahi_main%ahi_data%time(:,x)=julian+tfact*(x/dble(HIMAWARI_IR_NLINES))
+	do y=ahi_main%ahi_extent%y_min,ahi_main%ahi_extent%y_max
+			print*,y,y - ahi_main%ahi_extent%y_min
+			ahi_main%ahi_data%time(:,y - ahi_main%ahi_extent%y_min+1)=julian+tfact*(y/dble(HIMAWARI_IR_NLINES))
 	enddo
 
 #ifdef _OPENMP
 !$omp parallel DO PRIVATE(i,x,y,sza,saa,tnr)
 #endif
-	do y=1,HIMAWARI_IR_NCOLS
-		do x=1,HIMAWARI_IR_NLINES
+	do y=ahi_main%ahi_extent%y_min,ahi_main%ahi_extent%y_max
+		do x=ahi_main%ahi_extent%x_min,ahi_main%ahi_extent%x_max
 			retval	=	AHI_Solpos(iye,mon,idy,ihr,min,ahi_main%ahi_data%lat(x,y),ahi_main%ahi_data%lon(x,y),sza,saa)
 			ahi_main%ahi_data%sza(x,y)=sza
 			ahi_main%ahi_data%saa(x,y)=saa

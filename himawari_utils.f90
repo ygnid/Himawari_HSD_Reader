@@ -72,72 +72,92 @@ integer function	AHI_free_vals(ahi_main) result(status)
 
 	type(himawari_t_struct), intent(inout)	::	ahi_main
 
-	deallocate(ahi_main%ahi_data%lat)
-	deallocate(ahi_main%ahi_data%lon)
-	deallocate(ahi_main%ahi_data%vza)
-	deallocate(ahi_main%ahi_data%vaa)
-	deallocate(ahi_main%ahi_data%sza)
-	deallocate(ahi_main%ahi_data%saa)
-	deallocate(ahi_main%ahi_data%time)
-	deallocate(ahi_main%ahi_data%indata)
+	if (allocated(ahi_main%ahi_data%lat))		deallocate(ahi_main%ahi_data%lat)
+	if (allocated(ahi_main%ahi_data%lon))		deallocate(ahi_main%ahi_data%lon)
+	if (allocated(ahi_main%ahi_data%vza))		deallocate(ahi_main%ahi_data%vza)
+	if (allocated(ahi_main%ahi_data%vaa))		deallocate(ahi_main%ahi_data%vaa)
+	if (allocated(ahi_main%ahi_data%sza))		deallocate(ahi_main%ahi_data%sza)
+	if (allocated(ahi_main%ahi_data%saa))		deallocate(ahi_main%ahi_data%saa)
+	if (allocated(ahi_main%ahi_data%time))		deallocate(ahi_main%ahi_data%time)
+	if (allocated(ahi_main%ahi_data%indata))	deallocate(ahi_main%ahi_data%indata)
+	if (allocated(ahi_main%ahi_data%tmpdata)) deallocate(ahi_main%ahi_data%tmpdata)
+	if (allocated(ahi_main%ahi_data%soldata)) deallocate(ahi_main%ahi_data%soldata)
 
 	status	=	HIMAWARI_SUCCESS
 	return
 
 end function		AHI_free_vals
 
-
 integer function	AHI_free_vals_data(ahi_data,verbose) result(status)
 
 	type(himawari_t_data), intent(inout)	::	ahi_data
 	logical, intent(in)							:: verbose
 
-	deallocate(ahi_data%lat)
-	deallocate(ahi_data%lon)
-	deallocate(ahi_data%vza)
-	deallocate(ahi_data%vaa)
-	deallocate(ahi_data%sza)
-	deallocate(ahi_data%saa)
-	deallocate(ahi_data%time)
-	deallocate(ahi_data%indata)
+	if (allocated(ahi_data%lat))		deallocate(ahi_data%lat)
+	if (allocated(ahi_data%lon))		deallocate(ahi_data%lon)
+	if (allocated(ahi_data%vza))		deallocate(ahi_data%vza)
+	if (allocated(ahi_data%sza))		deallocate(ahi_data%vaa)
+	if (allocated(ahi_data%sza))		deallocate(ahi_data%sza)
+	if (allocated(ahi_data%saa))		deallocate(ahi_data%saa)
+	if (allocated(ahi_data%time))		deallocate(ahi_data%time)
+	if (allocated(ahi_data%indata))	deallocate(ahi_data%indata)
+	if (allocated(ahi_data%soldata)) deallocate(ahi_data%soldata)
+	if (allocated(ahi_data%tmpdata)) deallocate(ahi_data%tmpdata)
 
 	status	=	HIMAWARI_SUCCESS
 	return
 
 end function		AHI_free_vals_data
 
-integer function	AHI_alloc_vals_data(ahi_data,nchans,verbose) result(status)
+integer function	AHI_alloc_vals_data(ahi_data,ahi_extent,nchans,do_solar,verbose) result(status)
 
 	type(himawari_t_data), intent(inout)	::	ahi_data
+	type(himawari_t_extent), intent(inout)	::	ahi_extent
 	integer, intent(in)							::	nchans
-	integer											::	i,length
+	logical, intent(in)							:: do_solar
 	logical, intent(in)							:: verbose
-
+	integer											::	i,length
 
 	if (verbose) then
 		write(*,*)"Number of bands to read:",nchans
 	endif
 
-	allocate(ahi_data%lat(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%lon(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%vza(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%vaa(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%sza(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%saa(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_data%time(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
+	allocate(ahi_data%lat(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%lat(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%lon(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%lon(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%vza(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%vza(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%vaa(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%vaa(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%sza(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%sza(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%saa(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%saa(:,:)	=	him_sreal_fill_value
+	allocate(ahi_data%time(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_data%time(:,:)	=	him_sreal_fill_value
 
-	allocate(ahi_data%indata(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS,nchans))
+	allocate(ahi_data%indata(ahi_extent%x_size,ahi_extent%y_size,nchans))
+	ahi_data%indata(:,:,:)	=	him_sreal_fill_value
+
+	if (do_solar .eqv. .true.) then
+		allocate(ahi_data%soldata(ahi_extent%x_size,ahi_extent%y_size,3))
+		ahi_data%soldata(:,:,:)	=	him_sint_fill_value
+		allocate(ahi_data%tmpdata(ahi_extent%x_size,ahi_extent%y_size,3))
+		ahi_data%tmpdata(:,:,:)	=	him_sreal_fill_value
+	endif
 
 	status	=	HIMAWARI_SUCCESS
 	return
 
 end function		AHI_alloc_vals_data
 
-integer function	AHI_alloc_vals(ahi_main,verbose) result(status)
+integer function	AHI_alloc_vals(ahi_main,ahi_extent,verbose) result(status)
 
 	type(himawari_t_struct), intent(inout)	::	ahi_main
-	integer											::	i,length
+	type(himawari_t_extent), intent(inout)	::	ahi_extent
 	logical, intent(in)							:: verbose
+	integer											::	i,length
 
 !	ahi_main%ahi_data%n_bands	=	0
 !	do i=1,16
@@ -156,15 +176,30 @@ integer function	AHI_alloc_vals(ahi_main,verbose) result(status)
 		write(*,*)"Number of bands to read:",ahi_main%ahi_data%n_bands
 	endif
 
-	allocate(ahi_main%ahi_data%lat(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%lon(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%vza(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%vaa(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%sza(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%saa(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
-	allocate(ahi_main%ahi_data%time(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS))
+	allocate(ahi_main%ahi_data%lat(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%lat(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%lon(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%lon(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%vza(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%vza(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%vaa(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%vaa(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%sza(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%sza(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%saa(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%saa(:,:)	=	him_sreal_fill_value
+	allocate(ahi_main%ahi_data%time(ahi_extent%x_size,ahi_extent%y_size))
+	ahi_main%ahi_data%time(:,:)	=	him_sreal_fill_value
 
-	allocate(ahi_main%ahi_data%indata(HIMAWARI_IR_NLINES,HIMAWARI_IR_NCOLS,ahi_main%ahi_data%n_bands))
+	allocate(ahi_main%ahi_data%indata(ahi_extent%x_size,ahi_extent%y_size,ahi_main%ahi_data%n_bands))
+	ahi_main%ahi_data%indata(:,:,:)	=	him_sreal_fill_value
+
+	if (ahi_main%do_solar .eqv. .true.) then
+		allocate(ahi_main%ahi_data%soldata(ahi_extent%x_size,ahi_extent%y_size,3))
+		ahi_main%ahi_data%soldata(:,:,:)	=	him_sint_fill_value
+		allocate(ahi_main%ahi_data%tmpdata(ahi_extent%x_size,ahi_extent%y_size,3))
+		ahi_main%ahi_data%tmpdata(:,:,:)	=	him_sreal_fill_value
+	endif
 
 	status	=	HIMAWARI_SUCCESS
 	return
@@ -228,7 +263,6 @@ integer function	AHI_get_file_name(cnum, timeslot, satname, indir, outfile,verbo
 	return
 
 end function	 AHI_get_file_name
-
 
 
 integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satname, indir, outfile,verbose) result(status)
@@ -318,5 +352,127 @@ integer function	AHI_file_exists(filename,verbose) result(status)
   	endif
   	return
 end function	 AHI_file_exists
+
+
+
+integer function AHI_Create_TrueColour(ahi_data,ahi_extent,verbose) result(status)
+
+	use omp_lib
+
+	type(himawari_t_data), intent(inout)	::	ahi_data
+	type(himawari_t_extent), intent(in)    :: ahi_extent
+	logical, intent(in)							:: verbose
+
+	integer						::	x,y,n_threads
+	real(kind=ahi_sreal)		::	fval,rmin,rmax
+	integer(kind=ahi_sint),dimension(4)	::	scales
+
+	fval	=	0.13
+	rmin	=	0.00
+	rmax	=	1.25
+
+	if (verbose) write(*,*)
+
+#ifdef _OPENMP
+	if (verbose) then
+		n_threads	=	omp_get_max_threads()
+		write(*,*) "Creating true-colour image using ",n_threads,'threads'
+	endif
+!$omp parallel DO PRIVATE(x,y)
+#else
+	if (verbose)write(*,*) 'Creating true-colour image without threading'
+#endif
+
+	do x=ahi_extent%x_min,ahi_extent%x_max
+		do y=ahi_extent%y_min,ahi_extent%y_max
+			ahi_data%tmpdata(x,y,1)	=	ahi_data%indata(x,y,1)
+			ahi_data%tmpdata(x,y,2)	=	(1.-fval)*ahi_data%indata(x,y,2) + fval*ahi_data%indata(x,y,4)
+			ahi_data%tmpdata(x,y,3)	=	ahi_data%indata(x,y,3)
+
+		end do
+	end do
+#ifdef _OPENMP
+!$omp end parallel do
+#endif
+
+	where(ahi_data%tmpdata(:,:,:) .gt. rmax) ahi_data%tmpdata(:,:,:)	=	rmax
+	where(ahi_data%tmpdata(:,:,:) .lt. rmin) ahi_data%tmpdata(:,:,:)	=	rmin
+
+	ahi_data%tmpdata(:,:,1) = ((ahi_data%tmpdata(:,:,1)-rmin)*255)/(rmax-rmin)
+	ahi_data%tmpdata(:,:,2) = ((ahi_data%tmpdata(:,:,2)-rmin)*255)/(rmax-rmin)
+	ahi_data%tmpdata(:,:,3) = ((ahi_data%tmpdata(:,:,3)-rmin)*255)/(rmax-rmin)
+
+!	scales	=	(/ 0,47,0,12 /)
+!	scales	=	(/ 0,12,0,47 /)
+!	where(ahi_data%tmpdata(:,:,1) .lt. scales(2))	&
+!		ahi_data%soldata(:,:,1)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,1) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 47,116,12,138 /)
+!	scales	=	(/ 12,138,47,116 /)
+!	where(ahi_data%tmpdata(:,:,1) .ge. scales(1) .and. ahi_data%tmpdata(:,:,1) .lt. scales(2) )	&
+!		ahi_data%soldata(:,:,1)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,1) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 116,255,138,255 /)
+!	scales	=	(/ 138,255,116,255 /)
+!	where(ahi_data%tmpdata(:,:,1) .ge. scales(1) .and. ahi_data%tmpdata(:,:,1) .le. scales(2) )	&
+!		ahi_data%soldata(:,:,1)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,1) - scales(1)) / (scales(2) - scales(1)))
+
+
+
+!	scales	=	(/ 0,38,0,13 /)
+!	scales	=	(/ 0,13,0,38 /)
+!	where(ahi_data%tmpdata(:,:,2) .lt. scales(2))	&
+!		ahi_data%soldata(:,:,2)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,2) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 38,107,13,130 /)
+!	scales	=	(/ 13,130,38,107 /)
+!	where(ahi_data%tmpdata(:,:,2) .ge. scales(1) .and. ahi_data%tmpdata(:,:,2) .lt. scales(2) )	&
+!		ahi_data%soldata(:,:,2)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,2) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 107,255,130,255 /)
+!	scales	=	(/ 130,255,107,255 /)
+!	where(ahi_data%tmpdata(:,:,2) .ge. scales(1) .and. ahi_data%tmpdata(:,:,2) .le. scales(2) )	&
+!		ahi_data%soldata(:,:,2)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,2) - scales(1)) / (scales(2) - scales(1)))
+
+
+
+!	scales	=	(/ 0,33,1,14 /)
+!	scales	=	(/ 1,14,0,33 /)
+!	where(ahi_data%tmpdata(:,:,3) .lt. scales(2))	&
+!		ahi_data%soldata(:,:,3)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,3) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 33,100,14,124 /)
+!	scales	=	(/ 14,124,33,100 /)
+!	where(ahi_data%tmpdata(:,:,3) .ge. scales(1) .and. ahi_data%tmpdata(:,:,3) .lt. scales(2) )	&
+!		ahi_data%soldata(:,:,3)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,3) - scales(1)) / (scales(2) - scales(1)))
+
+!	scales	=	(/ 100,255,124,255 /)
+!	scales	=	(/ 124,255,100,255 /)
+!	where(ahi_data%tmpdata(:,:,3) .ge. scales(1) .and. ahi_data%tmpdata(:,:,3) .le. scales(2) )	&
+!		ahi_data%soldata(:,:,3)	=	scales(3) + (scales(4)-scales(3)) * &
+!							 ((ahi_data%tmpdata(:,:,3) - scales(1)) / (scales(2) - scales(1)))
+
+!	where (ahi_data%tmpdata .lt. 0) ahi_data%soldata=0
+!	where (ahi_data%soldata .lt. 0) ahi_data%soldata=0
+
+	ahi_data%tmpdata	=	sqrt(ahi_data%tmpdata)
+	where(ahi_data%tmpdata(:,:,:) .gt. 180) ahi_data%tmpdata=sqrt(ahi_data%tmpdata)
+
+	ahi_data%indata(:,:,1)=ahi_data%tmpdata(:,:,1)
+	ahi_data%indata(:,:,2)=ahi_data%tmpdata(:,:,2)
+	ahi_data%indata(:,:,3)=ahi_data%tmpdata(:,:,3)
+
+	status	=	HIMAWARI_SUCCESS
+
+
+end function AHI_Create_TrueColour
 
 end module himawari_utils

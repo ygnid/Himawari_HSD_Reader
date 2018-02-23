@@ -10,11 +10,11 @@
 .SUFFIXES: .c .f90
 
 # Change this to point to your local libraries for HDF5 and NetCDF
-LIBDIR=/home/proud/Desktop/ORAC/Libraries
+LIBDIR=/network/aopp/apres/users/proud/ORAC_Common_Prog/Library
 
 INCDIRS	+= -I$(LIBDIR)/hdf5/include -I$(LIBDIR)/ncdff/include -I$(LIBDIR)/ncdf4/include
 LIBDIRS 	+= -L$(LIBDIR)/hdf5/lib     -L$(LIBDIR)/ncdff/lib -L$(LIBDIR)/ncdf4/lib
-LINKS+= -lhdf5 -lhdf5_fortran -lhdf5hl_fortran -lnetcdf -lnetcdff -lm -fopenmp
+LINKS+= -lhdf5 -lhdf5_fortran -lhdf5hl_fortran -lnetcdff -lnetcdf -lm -fopenmp
 
 OBJECTS = himawari.o \
 		himawari_headerinfo.o \
@@ -32,7 +32,7 @@ F90=gfortran
 #F90=ifort
 
 CFLAGS=-g -O3 -ffree-line-length-0 -cpp -I. -fopenmp  #-DVERBOSE
-F90FLAGS=-g -O3 -I. -ffree-line-length-0 -cpp -fopenmp  # -DVERBOSE
+F90FLAGS=-g -O3 -I. -ffree-line-length-0 -cpp -fopenmp -fcheck=bounds  # -DVERBOSE
 
 #CFLAGS=-g -O2 -fpp -align rec1byte -warn noalign  -I.#-DVERBOSE
 #F90FLAGS=-g -O2 -I. -align rec1byte -warn noalign  -fpp #-DVERBOSE
