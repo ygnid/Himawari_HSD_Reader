@@ -370,9 +370,6 @@ integer function AHI_Create_TrueColour(ahi_data,ahi_extent,verbose) result(statu
 	fval	=	0.13
 	rmin	=	0.00
 	rmax	=	1.25
-
-	if (verbose) write(*,*)
-
 #ifdef _OPENMP
 	if (verbose) then
 		n_threads	=	omp_get_max_threads()
@@ -383,8 +380,8 @@ integer function AHI_Create_TrueColour(ahi_data,ahi_extent,verbose) result(statu
 	if (verbose)write(*,*) 'Creating true-colour image without threading'
 #endif
 
-	do x=ahi_extent%x_min,ahi_extent%x_max
-		do y=ahi_extent%y_min,ahi_extent%y_max
+	do x=1,ahi_extent%x_max-ahi_extent%x_min
+		do y=1,ahi_extent%y_max-ahi_extent%y_min
 			ahi_data%tmpdata(x,y,1)	=	ahi_data%indata(x,y,1)
 			ahi_data%tmpdata(x,y,2)	=	(1.-fval)*ahi_data%indata(x,y,2) + fval*ahi_data%indata(x,y,4)
 			ahi_data%tmpdata(x,y,3)	=	ahi_data%indata(x,y,3)

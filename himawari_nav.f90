@@ -225,6 +225,7 @@ integer function AHI_Calctime(ahi_main,verbose) result(status)
 	integer 			::	iye,mon,idy,ihr,min,ifail
 	integer 			::	iyyy,jy,jm,igreg,ja,ijul
 	integer			::	idint2,n_threads,tnr,i,t
+	integer        :: xmin,ymin,xmax,ymax
 	real(kind=ahi_dreal)	::	julian
 	real(kind=ahi_sreal)	::	sza,saa
 	real(kind=ahi_sreal)	::	sec
@@ -267,15 +268,20 @@ integer function AHI_Calctime(ahi_main,verbose) result(status)
 
 
 	do y=ahi_main%ahi_extent%y_min,ahi_main%ahi_extent%y_max
-			print*,y,y - ahi_main%ahi_extent%y_min
 			ahi_main%ahi_data%time(:,y - ahi_main%ahi_extent%y_min+1)=julian+tfact*(y/dble(HIMAWARI_IR_NLINES))
 	enddo
+
+	xmin = 1
+	ymin = 1
+
+	xmax = ahi_main%ahi_extent%x_max - ahi_main%ahi_extent%x_min
+	ymax = ahi_main%ahi_extent%y_max - ahi_main%ahi_extent%y_min
 
 #ifdef _OPENMP
 !$omp parallel DO PRIVATE(i,x,y,sza,saa,tnr)
 #endif
-	do y=ahi_main%ahi_extent%y_min,ahi_main%ahi_extent%y_max
-		do x=ahi_main%ahi_extent%x_min,ahi_main%ahi_extent%x_max
+	do y=ymin,ymax
+		do x=xmin,xmax
 			retval	=	AHI_Solpos(iye,mon,idy,ihr,min,ahi_main%ahi_data%lat(x,y),ahi_main%ahi_data%lon(x,y),sza,saa)
 			ahi_main%ahi_data%sza(x,y)=sza
 			ahi_main%ahi_data%saa(x,y)=saa

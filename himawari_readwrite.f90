@@ -159,6 +159,12 @@ integer function AHI_Retrieve_Predef_Geo(ahi_main,geofile,verbose) result(status
 	countval(1)	=	ahi_main%ahi_extent%x_max - ahi_main%ahi_extent%x_min + 1
 	countval(2)	=	ahi_main%ahi_extent%y_max - ahi_main%ahi_extent%y_min + 1
 
+!	start(2)	=	HIMAWARI_IR_NCOLS  - ahi_main%ahi_extent%x_max
+!	start(1)	=	ahi_main%ahi_extent%y_min
+
+!	countval(2)	=	ahi_main%ahi_extent%x_max - ahi_main%ahi_extent%x_min + 1
+!	countval(1)	=	ahi_main%ahi_extent%y_max - ahi_main%ahi_extent%y_min + 1
+
 	call AHI_NCDF_check( nf90_open(geofile, NF90_NOWRITE, ncid) )
 	call AHI_NCDF_check( nf90_inq_varid(ncid, "Lat", varid) )
 	call AHI_NCDF_check( nf90_get_var(ncid, varid, ahi_main%ahi_data%lat, start = start, count = countval) )
@@ -322,13 +328,13 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 				allocate(tseg(HIMAWARI_VIS_NCOLS,ahi_main%ahi_extent%segdel_vi))
 				tseg(:,:) = him_sreal_fill_value
 				if (ahi_main%vis_res .neqv. .true.) then
-					allocate(tdata2(HIMAWARI_VIS_NCOLS,ahi_main%ahi_extent%y_size*2))
+					allocate(tdata2(ahi_main%ahi_extent%x_size*2,ahi_main%ahi_extent%y_size*2))
 					xsize	=	ahi_main%ahi_extent%x_size*2
 					ysize	=	ahi_main%ahi_extent%y_size*2
-					xmin	=	ahi_main%ahi_extent%x_min*2
+					xmin	=	ahi_main%ahi_extent%x_min*2 - 1
 					xmax	=	ahi_main%ahi_extent%x_max*2
 				else
-					allocate(tdata2(HIMAWARI_VIS_NCOLS,ahi_main%ahi_extent%y_size))
+					allocate(tdata2(ahi_main%ahi_extent%x_size,ahi_main%ahi_extent%y_size))
 					xsize	=	ahi_main%ahi_extent%x_size
 					ysize	=	ahi_main%ahi_extent%y_size
 					xmin	=	ahi_main%ahi_extent%x_min
@@ -343,16 +349,16 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 			else if (i.eq.3) then
 				allocate(tseg(HIMAWARI_HVI_NCOLS,ahi_main%ahi_extent%segdel_hv))
 				if (ahi_main%vis_res .neqv. .true.) then
-					allocate(tdata2(HIMAWARI_HVI_NCOLS,ahi_main%ahi_extent%y_size*4))
+					allocate(tdata2(ahi_main%ahi_extent%x_size*4,ahi_main%ahi_extent%y_size*4))
 					xsize	=	ahi_main%ahi_extent%x_size*4
 					ysize	=	ahi_main%ahi_extent%y_size*4
-					xmin	=	ahi_main%ahi_extent%x_min*4
+					xmin	=	ahi_main%ahi_extent%x_min*4 - 3
 					xmax	=	ahi_main%ahi_extent%x_max*4
 				else
-					allocate(tdata2(HIMAWARI_HVI_NCOLS,ahi_main%ahi_extent%y_size*2))
+					allocate(tdata2(ahi_main%ahi_extent%x_size*2,ahi_main%ahi_extent%y_size*2))
 					xsize	=	ahi_main%ahi_extent%x_size*2
 					ysize	=	ahi_main%ahi_extent%y_size*2
-					xmin	=	ahi_main%ahi_extent%x_min*2
+					xmin	=	ahi_main%ahi_extent%x_min*2 - 1
 					xmax	=	ahi_main%ahi_extent%x_max*2
 				endif
 				tdata2(:,:) = him_sreal_fill_value
@@ -421,7 +427,18 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 
 					y_start	=	cur_y
 					y_end		=	cur_y + ahi_main%ahi_extent%endpos(indvar) - ahi_main%ahi_extent%startpos(indvar)
-					tdata2(xmin:xmax,y_start:y_end) = tseg(xmin:xmax,ahi_main%ahi_extent%startpos(indvar):ahi_main%ahi_extent%endpos(indvar))
+
+!					print*,xmin,xmax
+!					print*,""
+!					print*,shape(tdata2)
+!					print*,shape(tseg)
+!					print*,""
+!					print*,shape(tdata2(:,y_start:y_end))
+!					print*,shape(tseg(xmin:xmax,ahi_main%ahi_extent%startpos(indvar):ahi_main%ahi_extent%endpos(indvar)))
+!					print*,""
+
+
+					tdata2(:,y_start:y_end) = tseg(xmin:xmax,ahi_main%ahi_extent%startpos(indvar):ahi_main%ahi_extent%endpos(indvar))
 
 					cur_y		=	y_end + 1
 
@@ -612,7 +629,7 @@ integer function AHI_resample_hres(indata, outdata,ahi_extent,xsize,ysize,verbos
 	integer, intent(in)							::	ysize
 	logical,intent(in)							:: verbose
 
-	real,dimension(ahi_extent%y_size,ahi_extent%x_size) :: temparr
+	real,dimension(ahi_extent%x_size,ahi_extent%y_size) :: temparr
 
 	integer	::	x,y
 	integer	::	outx,outy
