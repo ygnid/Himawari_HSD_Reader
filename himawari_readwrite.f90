@@ -595,7 +595,7 @@ integer function AHI_readchan(fname, indata,band,convert,ahi_nav,verbose)result(
 
 				tdata2	=	temp / temp3;
 				tdata2	=	c0 + c1*tdata2 + c2*tdata2*tdata2
-				where(tdata2.le. 0.0) tdata2=him_sreal_fill_value
+				where(tdata2.le. 140.0) tdata2=him_sreal_fill_value
 				where(tdata2.gt. 400.0) tdata2=him_sreal_fill_value
 			endif
 		endif
