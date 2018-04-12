@@ -428,16 +428,6 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 					y_start	=	cur_y
 					y_end		=	cur_y + ahi_main%ahi_extent%endpos(indvar) - ahi_main%ahi_extent%startpos(indvar)
 
-!					print*,xmin,xmax
-!					print*,""
-!					print*,shape(tdata2)
-!					print*,shape(tseg)
-!					print*,""
-!					print*,shape(tdata2(:,y_start:y_end))
-!					print*,shape(tseg(xmin:xmax,ahi_main%ahi_extent%startpos(indvar):ahi_main%ahi_extent%endpos(indvar)))
-!					print*,""
-
-
 					tdata2(:,y_start:y_end) = tseg(xmin:xmax,ahi_main%ahi_extent%startpos(indvar):ahi_main%ahi_extent%endpos(indvar))
 
 					cur_y		=	y_end + 1
