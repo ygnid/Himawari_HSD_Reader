@@ -29,7 +29,7 @@ module himawari_readwrite
 contains
 
 
-integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,band_ids,do_not_alloc,do_geo,predef_geo,do_solar,vis_res,verbose) result(status)
+integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,band_ids,do_not_alloc,do_geo,predef_geo,do_solar,vis_res,satposstr, verbose) result(status)
 
 	character(len=*), intent(in)				::	filename
 	character(len=*), intent(in)				::	geofile
@@ -42,6 +42,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	logical,intent(in)							:: predef_geo
 	logical,intent(in)							:: do_solar
 	logical,intent(in)							:: vis_res
+	character(len=2048), intent(inout)		::	satposstr
 	logical,intent(in)							:: verbose
 
 	character(len=HIMAWARI_CHARLEN)			::	satname
@@ -49,6 +50,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	character(len=HIMAWARI_CHARLEN)			::	indir
 	integer,dimension(HIMAWARI_NCHANS)		::	inbands
 	type(himawari_t_struct)						::	ahi_main
+	character(len=HIMAWARI_CHARLEN)			::	satlat,satlon,sathei,eqrrad,polrad
 
 	integer		::	i,retval
 
@@ -127,7 +129,17 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 		endif
 	endif
 
+	! Define the satellite position string, used for parallax correction
+
+   write(satlat,'(f10.7)')0.0
+   write(satlon,'(f10.5)')ahi_main%ahi_navdata%sublon
+   write(sathei,'(f10.2)')ahi_main%ahi_navdata%satDis
+   write(eqrrad,'(f10.2)')ahi_main%ahi_navdata%eqtrRadius
+   write(polrad,'(f10.2)')ahi_main%ahi_navdata%polrRadius
+   satposstr=trim(satlat)//","//trim(satlon)//","//trim(sathei)//','//trim(eqrrad)//","//trim(polrad)
+
 	ahi_data2	=	ahi_main%ahi_data
+
 
 	if (ahi_main%ahi_data%memory_alloc_d.ne.1) then
 		retval	=	AHI_free_vals(ahi_main)

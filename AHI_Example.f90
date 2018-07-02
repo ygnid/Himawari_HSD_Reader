@@ -23,18 +23,19 @@ program AHI_example_f90
 
 	! Flag to do solar processing with Channels 1,2 and 3.
 	! This uses the method described in DOI:10.1175/BAMS-D-15-00154.1
-	logical :: do_solar = .true.
-!	logical :: do_solar = .false.
+!	logical :: do_solar = .true.
+	logical :: do_solar = .false.
 
 	! Flag setting if we want to process at VIS or IR res
-	logical :: vis_res = .true.
-!	logical :: vis_res = .false.
+!	logical :: vis_res = .true.
+	logical :: vis_res = .false.
 
 	! Filename of the file to be read.
 	character(HIMAWARI_CHARLEN)		::	filename
 	! Name of NetCDF file to use for output
 	character(HIMAWARI_CHARLEN)		::	outname
 	character(HIMAWARI_CHARLEN)		::	outname2
+	character(len=2048)         		::	satposstr
 
 	! Housekeeping vars
 	integer retval, nchans, ncmd, ios, iostat, fpos, i
@@ -64,10 +65,10 @@ program AHI_example_f90
 	endif
 
 !	! Test vals
-!	ahi_extent%x_min = 1200
-!	ahi_extent%x_max = 2999
-!	ahi_extent%y_min = 1700
-!	ahi_extent%y_max = 3399
+	ahi_extent%x_min = 1
+	ahi_extent%x_max = 5500
+	ahi_extent%y_min = 1
+	ahi_extent%y_max = 5500
 
 	ahi_extent%x_size = ahi_extent%x_max - ahi_extent%x_min + 1
 	ahi_extent%y_size = ahi_extent%y_max - ahi_extent%y_min + 1
@@ -142,7 +143,7 @@ program AHI_example_f90
 	endif
 
 	! Call the main reader function
-	retval	=	AHI_Main_Read(filename,"/network/aopp/apres/users/proud/ORAC_Data/GEO_FILES/AHI_141E_ANGLES.nc",ahi_data,ahi_extent,nchans,band_ids,0,0,.true.,do_solar,vis_res,verbose)
+	retval	=	AHI_Main_Read(filename,"/network/aopp/apres/users/proud/ORAC_Data/GEO_FILES/AHI_141E_ANGLES.nc",ahi_data,ahi_extent,nchans,band_ids,0,1,.true.,do_solar,vis_res,satposstr,verbose)
 	if (retval .ne. HIMAWARI_SUCCESS) then
 		write(*,*)"Error encountered in data reading. Quitting."
 		stop
@@ -180,9 +181,9 @@ program AHI_example_f90
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,9),ahi_extent,outname,"Band_09",0,verbose)
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,10),ahi_extent,outname,"Band_10",0,verbose)
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,11),ahi_extent,outname,"Band_11",0,verbose)
-!	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,12),ahi_extent,outname,"Band_12",0,verbose)
+	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,4),ahi_extent,outname,"Band_12",0,verbose)
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,13),ahi_extent,outname,"Band_13",0,verbose)
-!	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,14),ahi_extent,outname,"Band_14",0,verbose)
+	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,5),ahi_extent,outname,"Band_14",0,verbose)
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,15),ahi_extent,outname,"Band_15",0,verbose)
 !	retval	=	AHI_SavetoNCDF(ahi_data%indata(:,:,1),ahi_extent,outname,"Band_16",1,verbose)
 !
