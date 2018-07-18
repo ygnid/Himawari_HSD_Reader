@@ -1,4 +1,12 @@
-! Example program to read a Himawari-8 AHI image from HSD format
+!******************************************************************************%
+! *
+! *    Copyright (C) 2016-2018 Simon Proud <simon.proud@physics.ox.ac.uk>
+! *
+! *    This source code is licensed under the GNU General Public License (GPL),
+! *    Version 3.  See the file COPYING for more details.
+! *
+! ******************************************************************************/
+
 ! the output is saved to a netcdf file. The lines below can
 ! be used to read/save specific bands and ancillary data
 
@@ -35,7 +43,7 @@ program AHI_example_f90
 	! Name of NetCDF file to use for output
 	character(HIMAWARI_CHARLEN)		::	outname
 	character(HIMAWARI_CHARLEN)		::	outname2
-	character(len=2048)         		::	satposstr
+	character(len=128)         		::	satposstr
 
 	! Housekeeping vars
 	integer retval, nchans, ncmd, ios, iostat, fpos, i
