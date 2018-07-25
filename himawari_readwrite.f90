@@ -103,7 +103,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	endif
 	if (do_geo.eq.1) then
 		if (.not. predef_geo) then
-			if(verbose)write(*,*),"Computing lat/lon and satellite angles"
+			if(verbose)write(*,*)"Computing lat/lon and satellite angles"
 			retval	=	AHI_Pix2Geo(ahi_main,verbose)
 			if (retval.ne.HIMAWARI_SUCCESS) then
 				status	=	HIMAWARI_FAILURE
@@ -115,7 +115,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 				return
 			endif
 		else
-			if(verbose)write(*,*),"Retrieving lat/lon and satellite angles from file"
+			if(verbose)write(*,*)"Retrieving lat/lon and satellite angles from file"
 			retval	=	AHI_Retrieve_Predef_Geo(ahi_main,geofile,verbose)
 			if (retval.ne.HIMAWARI_SUCCESS) then
 				status	=	HIMAWARI_FAILURE
