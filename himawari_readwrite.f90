@@ -69,7 +69,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	ahi_main%vis_res	=	vis_res
 	ahi_main%do_solar	=	do_solar
 
-	write(*,*)"Reading AHI data for ",trim(ahi_main%ahi_info%timeslot(1:12))
+	if (verbose) write(*,*)"Reading AHI data for ",trim(ahi_main%ahi_info%timeslot(1:12))
 
 	ahi_main%inchans(:)	=	0
 
