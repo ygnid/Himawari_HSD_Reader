@@ -55,7 +55,9 @@ program AHI_example_f90
 	! Bands to read/write
 	integer,dimension(:), allocatable	::	band_ids
 
-	logical	:: verbose = .true.
+	logical	:: verbose
+
+	verbose	=	.true.
 
 	retval	=	0
 
@@ -84,6 +86,7 @@ program AHI_example_f90
 	! Loop over the command line arguments to extract files / chan numbers
 	ncmd		=	1
 	nchans	=	0
+
 	do
 		call get_command_argument(ncmd,inarg)
 		if (len_trim(inarg).eq. 0) exit

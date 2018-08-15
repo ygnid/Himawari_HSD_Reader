@@ -118,9 +118,7 @@ integer function	AHI_alloc_vals_data(ahi_data,ahi_extent,nchans,do_solar,verbose
 	logical, intent(in)							:: verbose
 	integer											::	i,length
 
-	if (verbose) then
-		write(*,*)"Number of bands to read:",nchans
-	endif
+	if (verbose) write(*,*)"Number of bands to read:",nchans
 
 	allocate(ahi_data%lat(ahi_extent%x_size,ahi_extent%y_size))
 	ahi_data%lat(:,:)	=	him_sreal_fill_value
