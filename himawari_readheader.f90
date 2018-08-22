@@ -134,6 +134,8 @@ integer function AHI_readhdr_VIS(filelun,ahi_hdr,verbose)result(status)
 	type(himawari_t_Spare)			::	him_spare
 	type(himawari_t_Correct_Table)	::	him_correct_table
 
+	fpos = 0
+
 	call	fseek(filelun,0,0,retval)
 	read(filelun)him_basic
 	fpos	=	fpos + him_basic%BlockLen
