@@ -45,16 +45,27 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	character(len=128), intent(inout)		::	satposstr
 	logical,intent(in)							:: verbose
 
-	character(len=HIMAWARI_CHARLEN)			::	satname
+	integer											::	satnum
 	character(len=HIMAWARI_CHARLEN)			::	timeslot
 	character(len=HIMAWARI_CHARLEN)			::	indir
 	integer,dimension(HIMAWARI_NCHANS)		::	inbands
 	type(himawari_t_struct)						::	ahi_main
 	character(len=HIMAWARI_CHARLEN)			::	satlat,satlon,sathei,eqrrad,polrad
 
-	integer		::	i,retval
+	integer		::	i,retval,pos
 
-	satname	=	"himawari8"
+
+	satnum	=	101
+	pos		=	index(trim(filename),"HS_H08_")
+	if (pos .le. 0) then
+		pos		=	index(trim(filename),"HS_H09_")
+		if (pos .le. 0) then
+			status	=	HIMAWARI_FAILURE
+			return
+		endif
+		satnum	=	102
+	endif
+
 	ahi_main%ahi_data%memory_alloc_d	=	do_not_alloc
 	ahi_main%ahi_data%n_bands		=	n_bands
 	ahi_main%ahi_extent = ahi_extent
@@ -64,7 +75,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 
 	ahi_main%ahi_info%indir		=	indir
 	ahi_main%ahi_info%timeslot	=	timeslot
-	ahi_main%ahi_info%satname	=	satname
+	ahi_main%ahi_info%satnum	=	satnum
 
 	ahi_main%vis_res	=	vis_res
 	ahi_main%do_solar	=	do_solar
@@ -170,12 +181,6 @@ integer function AHI_Retrieve_Predef_Geo(ahi_main,geofile,verbose) result(status
 
 	countval(1)	=	ahi_main%ahi_extent%x_max - ahi_main%ahi_extent%x_min + 1
 	countval(2)	=	ahi_main%ahi_extent%y_max - ahi_main%ahi_extent%y_min + 1
-
-!	start(2)	=	HIMAWARI_IR_NCOLS  - ahi_main%ahi_extent%x_max
-!	start(1)	=	ahi_main%ahi_extent%y_min
-
-!	countval(2)	=	ahi_main%ahi_extent%x_max - ahi_main%ahi_extent%x_min + 1
-!	countval(1)	=	ahi_main%ahi_extent%y_max - ahi_main%ahi_extent%y_min + 1
 
 	call AHI_NCDF_check( nf90_open(geofile, NF90_NOWRITE, ncid) )
 	call AHI_NCDF_check( nf90_inq_varid(ncid, "Lat", varid) )
@@ -418,9 +423,9 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 					endif
 
 					if (j.eq.0) then
-						retval	=	AHI_get_file_name(i,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satname,ahi_main%ahi_info%indir,fname,verbose)
+						retval	=	AHI_get_file_name(i,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satnum,ahi_main%ahi_info%indir,fname,verbose)
 					else
-						retval	=	AHI_get_file_name_seg(i,j,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satname,ahi_main%ahi_info%indir,fname,verbose)
+						retval	=	AHI_get_file_name_seg(i,j,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satnum,ahi_main%ahi_info%indir,fname,verbose)
 					endif
 					if (retval.ne.HIMAWARI_SUCCESS) then
 						write(*,*)"Cannot get filename for band: ",i

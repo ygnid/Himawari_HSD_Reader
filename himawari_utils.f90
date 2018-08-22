@@ -206,17 +206,24 @@ integer function	AHI_alloc_vals(ahi_main,ahi_extent,verbose) result(status)
 
 end function		AHI_alloc_vals
 
-integer function	AHI_get_file_name(cnum, timeslot, satname, indir, outfile,verbose) result(status)
+integer function	AHI_get_file_name(cnum, timeslot, satnum, indir, outfile,verbose) result(status)
 
-	integer, intent(in)			::	cnum
+	integer, intent(in)				::	cnum
 	character(len=*), intent(in)	::	timeslot
-	character(len=*), intent(in)	::	satname
+	integer, intent(in)				::	satnum
 	character(len=*), intent(in)	::	indir
 	character(len=*), intent(out)	::	outfile
 	logical, intent(in)				:: verbose
 
+	if (satnum .eq. 101) then
+		outfile	=	trim(outfile)//trim("himawari8")
+	elseif (satnum .eq. 101) then
+		outfile	=	trim(outfile)//trim("himawari9")
+	else
+		write(*,*) "ERROR: Unsupported platform: ",satnum
+		stop
+	endif
 	outfile=indir
-	outfile	=	trim(outfile)//trim(satname)
 	outfile	=	trim(outfile)//trim("_ahi_le1b_")
 	select case(cnum)
 		case(1)
@@ -265,12 +272,12 @@ integer function	AHI_get_file_name(cnum, timeslot, satname, indir, outfile,verbo
 end function	 AHI_get_file_name
 
 
-integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satname, indir, outfile,verbose) result(status)
+integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satnum, indir, outfile,verbose) result(status)
 
 	integer, intent(in)				::	cnum
 	integer, intent(in)				::	seg
 	character(len=*), intent(in)	::	timeslot
-	character(len=*), intent(in)	::	satname
+	integer, intent(in)	         ::	satnum
 	character(len=*), intent(in)	::	indir
 
 	character(len=*), intent(out)	::	outfile
@@ -278,7 +285,14 @@ integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satname, indir, outf
 	character(len=3)					::	tstr
 
 	outfile=indir
-	outfile	=	trim(outfile)//trim("HS_H08_")
+	if (satnum .eq. 101) then
+		outfile	=	trim(outfile)//trim("HS_H08_")
+	elseif (satnum .eq. 101) then
+		outfile	=	trim(outfile)//trim("HS_H09_")
+	else
+		write(*,*) "ERROR: Unsupported platform: ",satnum
+		stop
+	endif
 	outfile	=	trim(outfile)//trim(timeslot(1:8))
 	outfile	=	trim(outfile)//trim("_")
 	outfile	=	trim(outfile)//trim(timeslot(9:12))

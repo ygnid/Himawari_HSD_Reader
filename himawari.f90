@@ -124,7 +124,7 @@ module himawari
 	type ::	himawari_t_info
 		character(len=HIMAWARI_CHARLEN)	::	indir
 		character(len=HIMAWARI_CHARLEN)	::	timeslot
-		character(len=HIMAWARI_CHARLEN)	::	satname
+		integer                         	::	satnum !101 = H08, 102 = H08
 		character(len=HIMAWARI_CHARLEN)  :: region
 		character(len=HIMAWARI_CHARLEN)  :: regseg
 	end type	himawari_t_info
