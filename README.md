@@ -1,2 +1,3 @@
 # Himawari_HSD_Reader
-A reader for data from Japan's Himawari satellite. This utility can load images, compute geopositions and solar data. It can either be linked to external programs or can output the data directly to a netCDF file.
+A reader for data from Japan's Himawari satellite.
+This utility reads 'raw' HSD format data and can convert it into more friendly formats such as NetCDF4. Calibration can also be applied to retrieve radiance, brightness temperature or reflectance rather than digital counts. You can also use this utility to compute latitude/longitude values for an image and to compute solar/viewing geometry.
