@@ -46,6 +46,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 	logical,intent(in)							:: verbose
 
 	integer											::	satnum
+	character(len=4)								::	region
 	character(len=HIMAWARI_CHARLEN)			::	timeslot
 	character(len=HIMAWARI_CHARLEN)			::	indir
 	integer,dimension(HIMAWARI_NCHANS)		::	inbands
@@ -66,9 +67,33 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 		satnum	=	102
 	endif
 
+	! Default region is full disk
+	if (index(filename,"FLDK") .gt. 0) then
+		region	=	"FLDK"
+	elseif (index(filename,"JP01") .gt. 0) then
+		region	=	"JP01"
+	elseif (index(filename,"JP02") .gt. 0) then
+		region	=	"JP02"
+	elseif (index(filename,"JP03") .gt. 0) then
+		region	=	"JP03"
+	elseif (index(filename,"JP04") .gt. 0) then
+		region	=	"JP04"
+	elseif (index(filename,"R301") .gt. 0) then
+		region	=	"R301"
+	elseif (index(filename,"R302") .gt. 0) then
+		region	=	"R302"
+	elseif (index(filename,"R303") .gt. 0) then
+		region	=	"R303"
+	elseif (index(filename,"R304") .gt. 0) then
+		region	=	"R304"
+	else
+		region	=	"FLDK"
+	endif
+
+
 	ahi_main%ahi_data%memory_alloc_d	=	do_not_alloc
-	ahi_main%ahi_data%n_bands		=	n_bands
-	ahi_main%ahi_extent = ahi_extent
+	ahi_main%ahi_data%n_bands			=	n_bands
+	ahi_main%ahi_extent 					=	ahi_extent
 
 	retval	=	AHI_get_timeslot(filename,timeslot)
 	retval	=	AHI_get_indir(filename,indir)
@@ -107,7 +132,7 @@ integer function AHI_Main_Read(filename,geofile,ahi_data2,ahi_extent,n_bands,ban
 		endif
 	endif
 
-	retval	=	AHI_Setup_Read_Chans(ahi_main,verbose)
+	retval	=	AHI_Setup_Read_Chans(ahi_main,region,verbose)
 	if (retval.ne.HIMAWARI_SUCCESS) then
 		status	=	HIMAWARI_FAILURE
 		return
@@ -295,9 +320,10 @@ integer function AHI_Setup_Segments(ahi_main,verbose) result(status)
 
 end function AHI_Setup_Segments
 
-integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
+integer function AHI_Setup_Read_Chans(ahi_main,region,verbose) result(status)
 
 	type(himawari_t_struct), intent(inout)		::	ahi_main
+	character(len=4),intent(in)					:: region
 	logical,intent(in)								:: verbose
 
 	character(HIMAWARI_CHARLEN)				::	fname
@@ -330,6 +356,7 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 	minseg	=	1
 	maxseg	=	10
 
+   ! i is channel number
 	do i=1,HIMAWARI_NCHANS
 
 		! Index of y position between segments
@@ -402,6 +429,7 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 				indvar	=	1
 			endif
 
+			! j is segment number
 			do j=minseg,maxseg
 
 				if (ahi_main%ahi_extent%procseg(j) .eqv. .true.) then
@@ -425,7 +453,7 @@ integer function AHI_Setup_Read_Chans(ahi_main,verbose) result(status)
 					if (j.eq.0) then
 						retval	=	AHI_get_file_name(i,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satnum,ahi_main%ahi_info%indir,fname,verbose)
 					else
-						retval	=	AHI_get_file_name_seg(i,j,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satnum,ahi_main%ahi_info%indir,fname,verbose)
+						retval	=	AHI_get_file_name_seg(i,j,ahi_main%ahi_info%timeslot,ahi_main%ahi_info%satnum,ahi_main%ahi_info%indir,fname,region,verbose)
 					endif
 					if (retval.ne.HIMAWARI_SUCCESS) then
 						write(*,*)"Cannot get filename for band: ",i

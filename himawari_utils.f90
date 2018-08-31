@@ -270,15 +270,15 @@ integer function	AHI_get_file_name(cnum, timeslot, satnum, indir, outfile,verbos
 end function	 AHI_get_file_name
 
 
-integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satnum, indir, outfile,verbose) result(status)
+integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satnum, indir, outfile,region,verbose) result(status)
 
 	integer, intent(in)				::	cnum
 	integer, intent(in)				::	seg
 	character(len=*), intent(in)	::	timeslot
 	integer, intent(in)	         ::	satnum
 	character(len=*), intent(in)	::	indir
-
 	character(len=*), intent(out)	::	outfile
+	character(len=4), intent(in)  ::	region
 	logical, intent(in)				:: verbose
 	character(len=3)					::	tstr
 
@@ -333,7 +333,7 @@ integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satnum, indir, outfi
 			status	=	HIMAWARI_FAILURE
 			return
 	end select
-	outfile	=	trim(outfile)//trim("_FLDK_R")
+	outfile	=	trim(outfile)//trim("_")//trim(region)//trim("_R")
 	if (cnum.eq.1.or.cnum.eq.2.or.cnum.eq.4) then
 		outfile	=	trim(outfile)//trim("10_S")
 	else if (cnum.eq.3) then
@@ -343,7 +343,11 @@ integer function	AHI_get_file_name_seg(cnum, seg, timeslot, satnum, indir, outfi
 	endif
 	write(tstr,"(I2.2)")seg
 	outfile	=	trim(outfile)//trim(tstr)
-	outfile	=	trim(outfile)//trim("10.DAT")
+	if (trim(region) .eq. "FLDK") then
+		outfile	=	trim(outfile)//trim("10.DAT")
+	else
+		outfile	=	trim(outfile)//trim("01.DAT")
+	endif
 
 	status	=	HIMAWARI_SUCCESS
 	return
